@@ -1,8 +1,19 @@
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
+import os
+import json
 
 # Initialize Firebase
-cred = credentials.Certificate("serviceAccountKey.json")
+# For local development, use the service account key file
+# For Heroku, use the FIREBASE_CREDENTIALS environment variable
+if os.getenv("FIREBASE_CREDENTIALS"):
+    # Heroku deployment: read credentials from environment variable
+    firebase_credentials = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
+    cred = credentials.Certificate(firebase_credentials)
+else:
+    # Local development: read from file
+    cred = credentials.Certificate("serviceAccountKey.json")
+
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
